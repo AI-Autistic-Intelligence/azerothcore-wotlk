@@ -2122,14 +2122,7 @@ public:
                         {
                             if (Creature* sindragosa = instance->SummonCreature(NPC_SINDRAGOSA, SindragosaSpawnPos))
                             {
-                                sindragosa->setActive(true);
-                                sindragosa->SetDisableGravity(true);
-                                sindragosa->GetMotionMaster()->MoveWaypoint(NPC_SINDRAGOSA * 10, true);
-
-                                if (TempSummon* summon = sindragosa->ToTempSummon())
-                                {
-                                    summon->SetTempSummonType(TEMPSUMMON_DEAD_DESPAWN);
-                                }
+                                sindragosa->AI()->DoAction(ACTION_START_FROSTWYRM);
                             }
                         }
                         // Could happen more than once if more than one player enters before she respawns.

@@ -357,6 +357,13 @@ public:
 
         void EnterEvadeMode(EvadeReason why) override
         {
+            _isLanding = false;
+            _isInAirPhase = false;
+            _isBelow20Pct = false;
+            _isThirdPhase = false;
+            me->SetDisableGravity(false);
+            me->SetAnimTier(AnimTier::Ground);
+            me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
             instance->SetBossState(DATA_SINDRAGOSA, FAIL);
             BossAI::EnterEvadeMode(why);
         }
@@ -364,7 +371,10 @@ public:
         void JustReachedHome() override
         {
             BossAI::JustReachedHome();
+            me->SetDisableGravity(false);
             me->SetAnimTier(AnimTier::Ground);
+            me->RemoveUnitFlag(UNIT_FLAG_NON_ATTACKABLE);
+            me->SetReactState(REACT_AGGRESSIVE);
         }
 
         void KilledUnit(Unit* victim) override
