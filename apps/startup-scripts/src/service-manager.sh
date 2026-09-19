@@ -2293,7 +2293,7 @@ function wait_service_uptime() {
     done
     # show service logs for debugging
     echo -e "${YELLOW}Service logs for '$service_name':${NC}"
-    service_logs "$service_name" true
+    service_logs "$service_name" false
     echo -e "${RED}Timeout: $service_name did not reach ${min_seconds}s uptime within ${timeout}s${NC}" >&2
     return 1
 }
