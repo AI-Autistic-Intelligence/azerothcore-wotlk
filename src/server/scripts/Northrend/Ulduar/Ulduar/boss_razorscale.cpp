@@ -336,13 +336,6 @@ struct boss_razorscale : public BossAI
             case POINT_RAZORSCALE_GROUND:
                 me->SetDisableGravity(false);
                 me->SetFacingTo(RazorGroundPos.GetOrientation());
-                if (_permaGround || me->HealthBelowPct(50))
-                {
-                    _permaGround = true;
-                    me->SetReactState(REACT_AGGRESSIVE);
-                    DoAction(ACTION_START_PERMA_GROUND);
-                    break;
-                }
                 me->SetReactState(REACT_PASSIVE);
                 DoCastSelf(SPELL_STUN_SELF, true);
                 {
@@ -351,6 +344,13 @@ struct boss_razorscale : public BossAI
                     EntryCheckPredicate commanderPred(NPC_EXPEDITION_COMMANDER);
                     summons.DoAction(ACTION_GROUND_PHASE, commanderPred);
                     events.ScheduleEvent(EVENT_FLAME_BREATH, 30s, 0, PHASE_GROUND);
+                }
+                
+                if (_permaGround || me->HealthBelowPct(50))
+                {
+                    _permaGround = true;
+                    me->SetReactState(REACT_AGGRESSIVE);
+                    DoAction(ACTION_START_PERMA_GROUND);
                 }
                 break;
             case POINT_RAZORSCALE_TAKEOFF:
