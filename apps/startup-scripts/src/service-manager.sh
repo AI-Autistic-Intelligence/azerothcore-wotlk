@@ -1038,6 +1038,8 @@ function pm2_create_service() {
     # Add max restarts if specified
     if [ -n "$max_restarts" ]; then
         pm2_args+=("--max-restarts" "$max_restarts")
+        # Add a 2000ms delay between restarts to allow transient errors (like MySQL connection drops) to recover before exhausting restarts
+        pm2_args+=("--restart-delay" "2000")
     fi
 
     if [ ${#extra_pm2_args[@]} -gt 0 ]; then
@@ -2282,6 +2284,20 @@ function wait_service_uptime() {
     local waited=0
 
     while [ "$waited" -le "$timeout" ]; do
+        # Check if PM2 marked the service as errored (i.e. hit max restarts)
+        local service_info=$(get_service_info "$service_name" 2>/dev/null || true)
+        if [ -n "$service_info" ]; then
+            local provider=$(echo "$service_info" | jq -r '.provider')
+            if [ "$provider" = "pm2" ]; then
+                local info_json=$(pm2 jlist 2>/dev/null)
+                local status=$(echo "$info_json" | jq -r ".[] | select(.name==\"$service_name\").pm2_env.status // empty")
+                if [ "$status" = "errored" ]; then
+                    echo -e "${RED}Service '$service_name' is in 'errored' state (max restarts reached). Aborting wait.${NC}" >&2
+                    break
+                fi
+            fi
+        fi
+
         if secs=$(service_uptime_seconds "$service_name" 2>/dev/null); then
             if [ "$secs" -ge "$min_seconds" ]; then
                 echo -e "${GREEN}Service '$service_name' has reached ${secs}s uptime (required: ${min_seconds}s)${NC}"
