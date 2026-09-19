@@ -345,7 +345,7 @@ struct boss_razorscale : public BossAI
                     summons.DoAction(ACTION_GROUND_PHASE, commanderPred);
                     events.ScheduleEvent(EVENT_FLAME_BREATH, 30s, 0, PHASE_GROUND);
                 }
-                
+
                 if (_permaGround || me->HealthBelowPct(50))
                 {
                     _permaGround = true;
